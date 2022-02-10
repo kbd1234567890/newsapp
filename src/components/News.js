@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import NewsItem from "./NewsItem";
+import Spinner from "./Spinner";
 
 export default class News extends Component {
   k = "Kanifanath Baban Dhobale Junior Consultant Tibco";
@@ -16,46 +17,53 @@ export default class News extends Component {
 
   async componentDidMount() {
     console.log("cdm");
+    this.setState({
+      loading: true
+    })
     let url =
-      "https://newsapi.org/v2/top-headlines?country=in&apiKey=0611163361514ed286d129eeca948984&page=" +
-      this.state.page;
+      `https://newsapi.org/v2/top-headlines?country=in&apiKey=0611163361514ed286d129eeca948984&page=${this.state.page}&pageSize=${this.props.pageSize}`;
     let data = await fetch(url);
     let parsedData = await data.json();
     console.log(parsedData);
     this.setState({
       articles: parsedData.articles,
-      totalResults: parsedData.totalResults
+      totalResults: parsedData.totalResults,
+      loading: false
     });
   }
 
   handleNextClick = async () => {
     console.log("Next");
-
-    if(this.state.page + 1 > Math.ceil(this.state.totalResults / 20)){
-    }
-    else{
-      let url = `https://newsapi.org/v2/top-headlines?country=in&apiKey=0611163361514ed286d129eeca948984&page=${
-        this.state.page + 1
-      }&pageSize=20`;
-      let data = await fetch(url);
-      let parsedData = await data.json();
-      console.log(parsedData);
-      this.setState({
-        articles: parsedData.articles,
-        page: this.state.page + 1,
-      });
-    }
+    
+    this.setState({
+      loading: true
+    })
+    let url = `https://newsapi.org/v2/top-headlines?country=in&apiKey=0611163361514ed286d129eeca948984&page=${
+      this.state.page + 1
+    }&pageSize=${this.props.pageSize}`;
+    let data = await fetch(url);
+    let parsedData = await data.json();
+    console.log(parsedData);
+    this.setState({
+      articles: parsedData.articles,
+      page: this.state.page + 1,
+      loading: false
+    });
   };
 
   handlePrevClick = async () => {
     console.log("prev");
-    let url = `https://newsapi.org/v2/top-headlines?country=in&apiKey=0611163361514ed286d129eeca948984&page=${this.state.page - 1}&pageSize=20`;
+    this.setState({
+      loading: true
+    })
+    let url = `https://newsapi.org/v2/top-headlines?country=in&apiKey=0611163361514ed286d129eeca948984&page=${this.state.page - 1}&pageSize=${this.props.pageSize}`;
     let data = await fetch(url);
     let parsedData = await data.json();
     console.log(parsedData);
     this.setState({
       articles: parsedData.articles,
       page: this.state.page - 1,
+      loading: false
     });
   };
 
@@ -63,9 +71,10 @@ export default class News extends Component {
     console.log("render");
     return (
       <div className="container my-3">
-        <h2>Knews - Top Headlines</h2>
+        <h1 className="text-center">Knews - Top Headlines</h1>
+        {this.state.loading && <Spinner />}
         <div className="row">
-          {this.state.articles.map((element) => {
+          { !this.state.loading && this.state.articles.map((element) => {
             if (element === undefined) {
               return null;
             }
@@ -98,6 +107,7 @@ export default class News extends Component {
             &larr; Prev
           </button>
           <button
+            disabled={this.state.page + 1 > Math.ceil(this.state.totalResults / this.props.pageSize)}
             type="button"
             className="btn btn-dark"
             onClick={this.handleNextClick}
