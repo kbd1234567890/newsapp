@@ -105,6 +105,10 @@ class News extends Component {
                       ? element.urlToImage
                       : "https://images.indianexpress.com/2022/02/S22-colours-feature.jpg"
                   }
+                  
+                  author = {element.author=== null?"Unknown":element.author}
+                  date = {element.publishedAt}
+                  source = {element.source.name}
                 />
               </div>
             );
