@@ -5,7 +5,7 @@ class Spinner extends Component {
   render() {
     return (
       <div className='text-center'>
-        <img src={loading} alt="spinner" />
+        <img className='my-3' src={loading} alt="spinner" />
       </div>
     )
   }
